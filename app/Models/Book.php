@@ -9,3 +9,4 @@ class Book extends Model
 {
     use HasFactory;
 }
+
