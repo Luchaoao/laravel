@@ -28,14 +28,19 @@ Route::get('/', function () {
     $books = Book::get();
     
     // 中止並印出
-    dd($books);
+    // dd($books);
     
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+    return Inertia::render('Test', [
+        'books' => $books,
+        'count' => 5,
+        'title' => 'Midnight',
     ]);
+    // return Inertia::render('Welcome', [
+    //     'canLogin' => Route::has('login'),
+    //     'canRegister' => Route::has('register'),
+    //     'laravelVersion' => Application::VERSION,
+    //     'phpVersion' => PHP_VERSION,
+    // ]);
 });
 
 Route::get('/dashboard', function () {
