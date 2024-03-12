@@ -4,6 +4,7 @@ use App\Models\Book;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\ProfileController;
 
 /*
@@ -17,30 +18,40 @@ use App\Http\Controllers\ProfileController;
 |
 */
 // 首頁
-Route::get('/', function () {
-    // 宣告變數
-    $a = 0;
-    $b = [1, 2, 3];
-    $c = 'hello';
-    $d = (object)['id' => 1];
-    $e = ['id' => 1];
+// Route::get('/', function () {
+//     // 宣告變數
+//     $a = 0;
+//     $b = [1, 2, 3];
+//     $c = 'hello';
+//     $d = (object)['id' => 1];
+//     $e = ['id' => 1];
 
-    $books = Book::get();
+//     $books = Book::get();
+
+//     $data = [
+//         'books' => $books,
+//         'count' => 5,
+//         'title' => 'Midnight',
+//     ];
     
-    // 中止並印出
-    // dd($books);
+//     // 中止並印出
+//     // dd($books);
     
-    return Inertia::render('Test', [
-        'books' => $books,
-        'count' => 5,
-        'title' => 'Midnight',
+//     return Inertia::render('Test', [
+//         'response' => $data,
+//     ]);
+// });
+
+// 將邏輯放置 controller
+// Route::get('/test', [TestController::class, 'index']);
+
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
     ]);
-    // return Inertia::render('Welcome', [
-    //     'canLogin' => Route::has('login'),
-    //     'canRegister' => Route::has('register'),
-    //     'laravelVersion' => Application::VERSION,
-    //     'phpVersion' => PHP_VERSION,
-    // ]);
 });
 
 Route::get('/dashboard', function () {
