@@ -42,8 +42,26 @@ use App\Http\Controllers\ProfileController;
 //     ]);
 // });
 
-// 將邏輯放置 controller
-Route::get('/test', [TestController::class, 'index'])->middleware(['auth', 'verified']);
+Route::middleware(['auth', 'verified'])->group(function () {
+
+// 將邏輯放置 controller 呼叫index涵式
+Route::get('/test', [TestController::class, 'index']);
+
+// 新增Book資料 用get
+Route::get('/add-book',[TestController::class, 'store']);
+
+// 新增Book資料 用post
+Route::post('/post-book',[TestController::class, 'add']);
+
+// 刪除Book路由
+Route::post('/delete-book',[TestController::class, 'deleteBook']);
+
+// 更新Book路由
+Route::post('/update-book',[TestController::class, 'updateBook']);
+
+});
+
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
