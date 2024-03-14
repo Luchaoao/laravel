@@ -169,20 +169,28 @@ class TestController extends Controller
         return redirect('/test')->with(['message' => $message]);
     }
 
-    // public function updateBook(Request $request)
-    // {
-    //     $book = Book::find($request->id);
+    public function updateBook(Request $request)
+    {
+        $message = '';
 
-    //     try {
-    //         Book::create([
-    //             'name': $request->name,
-    //         ]);
-    //         $message = 'success';
-    //     }catch (\Throwable $th) {
-    //         $message = 'fail';
-    //     }
+        try {
+            // 找到指定id的書本並賦值給$book
+            $book = Book::find($request->id);
+    
+            $book->update([
+                'name' => $request->name,
+                'author' => $request->author,
+                'category' => $request->category,
+                'book_status' => $request->bookStatus,
+            ]);
 
-    //     // 回到test頁面
-    //     return redirect('/test')->with(['message' => $message]);
-    // }
+            $message = '成功';
+        } catch (\Throwable $th) {
+            $message = '失敗';
+        }
+
+
+        // 回到Test頁面
+        return redirect('/test')->with(['message' => $message]);
+    }
 }
