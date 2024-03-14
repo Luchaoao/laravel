@@ -74,26 +74,29 @@ export default {
             this.editname = book.name;
             this.editauthor = book.author;
             this.editcategory = book.category;
-            this.editbookStatus = book.bookStatus;
+            this.editbookStatus = book.book_status;
         },
 
         updateBook() {
-            this.$inertia.post('update-book',
+            this.$inertia.post('/update-book',
                 {
                     id: this.editId,
                     name: this.editname,
                     author: this.editauthor,
                     category: this.editcategory,
-                    bookStatus: this.editbookStatus,
+                    book_status: this.editbookStatus,
                 },
                 {
                     onSuccess: (res) => {
                         const msg = res.props.flash.message;
                         alert(msg);
                     }
-                }
-            );
-        }
+                });
+            this.editname = '';
+            this.editauthor = '';
+            this.editcategory = '';
+            this.editbookStatus = '';
+        },
     },
 }
 </script>
@@ -104,12 +107,14 @@ export default {
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Test</h2>
         </template>
 
-        <div class="w-full h-screen bg-blue-400 flex flex-col items-center p-4">
+        <div class="w-full bg-blue-400 flex flex-col items-center p-4">
             <Link href="./" class="block border border-black p-2 mt-3 mb-2 rounded">Back to homepage</Link>
 
             <div v-for="book in response.books" :key="book.id">
                 <div>書名：{{ book.name }}</div>
                 <div>作者：{{ book.author }}</div>
+                <div>分類：{{ book.category }}</div>
+                <div>狀態：{{ book.book_status }}</div>
                 <button type="button" class="block border border-black p-2 mt-3 mb-3 rounded"
                     @click="deleteBook(book.id)">Delete book</button>
                 <button type="button" class="block border border-black p-2 mt-3 mb-3 rounded"
@@ -136,7 +141,10 @@ export default {
                     <input v-model="editbookStatus" type="text" placeholder="請輸入狀態" class="rounded">
                 </label>
             </form>
-
+            <button type="button"
+                class="block mt-2 p-2 border border-black rounded text-white bg-blue-500 hover:bg-blue-500/50"
+                @click="updateBook">save edit
+            </button>
 
             <form class="mt-3 flex flex-col">
                 <label for="">

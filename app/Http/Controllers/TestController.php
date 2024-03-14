@@ -181,7 +181,7 @@ class TestController extends Controller
                 'name' => $request->name,
                 'author' => $request->author,
                 'category' => $request->category,
-                'book_status' => $request->bookStatus,
+                'book_status' => $request->book_status,
             ]);
 
             $message = '成功';
