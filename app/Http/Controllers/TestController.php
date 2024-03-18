@@ -8,18 +8,33 @@ use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::get();
-        // dd(123);
-        $data = [
-            'books' => $books,
-            'count' => 5,
-            'title' => 'Midnight',
-        ];
+        $rule = $request->rule ?? '0';
+
+        if ($rule === '0') {
+            $books = Book::get();
+        } else if ($rule === '1') {
+            $books = Book::where([
+                ['author', '=', '123'],
+            ])->get();
+        }
+
+        // $books = Book::get();
+        // // dd(123);
+        // $data = [
+        //     'books' => $books,
+        //     'count' => 5,
+        //     'title' => 'Midnight',
+        // ];
+
+        // $books = Book::where([
+        //     ['author', '=', '123'],
+        // ])->get();
+        // dd($books);
 
         return Inertia::render('Test', [
-            'response' => $data,
+            'response' => $books,
         ]);
     }
 
@@ -139,7 +154,7 @@ class TestController extends Controller
                 'book_status' => $request->bookStatus,
             ]);
             $message = 'success';
-        }catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             $message = 'fail';
         }
 
@@ -176,7 +191,7 @@ class TestController extends Controller
         try {
             // 找到指定id的書本並賦值給$book
             $book = Book::find($request->id);
-    
+
             $book->update([
                 'name' => $request->name,
                 'author' => $request->author,
@@ -191,6 +206,53 @@ class TestController extends Controller
 
 
         // 回到Test頁面
+        return redirect('/test')->with(['message' => $message]);
+    }
+
+    public function uploadFile(Request $request)
+    {
+
+        // $file = $request->file;
+        // // dd($file);
+
+        // // 檢查是否有upload資料夾，如果沒有則建立一個upload資料夾
+        // if (!is_dir('upload/')) {
+        //     mkdir('upload/');
+        // }
+
+        // // 拿到檔案名稱
+        // $fileName = $file->getClientOriginalName();
+
+        // // 組成檔案路徑
+        // $path = public_path() . '/upload/' . $fileName;
+
+        // // 將文件存入指定路徑
+        // move_uploaded_file($file, $path);
+
+        $message = '';
+
+        try {
+            $file = $request->file;
+
+            // 檢查是否有upload資料夾，如果沒有則建立一個upload資料夾
+            if (!is_dir('upload/')) {
+                mkdir('upload/');
+            }
+
+            // 拿到檔案名稱
+            $fileName = $file->getClientOriginalName();
+
+            // 組成檔案路徑
+            $path = public_path() . '/upload/' . $fileName;
+
+            // 將文件存入指定路徑
+            move_uploaded_file($file, $path);
+
+            $message = '成功';
+        } catch (\Throwable $th) {
+            $message = '失敗';
+        }
+
         return redirect('/test')->with(['message' => $message]);
     }
 }

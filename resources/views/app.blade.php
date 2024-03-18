@@ -17,5 +17,7 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </body>
 </html>

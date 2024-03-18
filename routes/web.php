@@ -59,6 +59,9 @@ Route::post('/delete-book',[TestController::class, 'deleteBook']);
 // 更新Book路由
 Route::post('/update-book',[TestController::class, 'updateBook']);
 
+// 上傳檔案
+Route::post('/upload-file',[TestController::class, 'uploadFile']);
+
 });
 
 

@@ -22,6 +22,9 @@ export default {
         response: {
             type: Object,
         },
+        all: {
+            type: Object,
+        },
     },
     data() {
         return {
@@ -34,6 +37,7 @@ export default {
             editcategory: '',
             editbookStatus: '',
             editId: '',
+            fileData: null,
         };
     },
     methods: {
@@ -41,35 +45,67 @@ export default {
             // 發送get請求
             // this.$inertia.get('/add-book');
 
-            // 發送post請求
-            this.$inertia.post('/post-book', {
-                name: this.name,
-                author: this.author,
-                category: this.category,
-                bookStatus: this.bookStatus,
-            }, {
-                onSuccess: (res) => {
-                    const msg = res.props.flash.message;
-                    alert(msg);
+            // 檢查是否有填寫書名，如沒有則跳提醒視窗
+            if (!this.name || !this.author) {
+                Swal.fire({
+                    icon: "error",
+                    title: "請填寫完整資料",
+                });
+                return;
+            };
+
+            Swal.fire({
+                title: "確定要新增嗎?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 發送post請求
+                    this.$inertia.post('/post-book', {
+                        name: this.name,
+                        author: this.author,
+                        category: this.category,
+                        bookStatus: this.bookStatus,
+                    }, {
+                        onSuccess: (res) => {
+                            const msg = res.props.flash.message;
+                            Swal.fire(msg);
+                        }
+                    });
+                    this.name = '';
+                    this.author = '';
+                    this.category = '';
+                    this.bookStatus = '';
                 }
             });
-            this.name = '';
-            this.author = '';
-            this.category = '';
-            this.bookStatus = '';
+
         },
 
         deleteBook(id) {
-            this.$inertia.post('/delete-book', { id: id }, {
+            Swal.fire({
+                title: "確定要刪除嗎?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$inertia.post('/delete-book', { id: id }, {
                 onSuccess: (res) => {
                     const msg = res.props.flash.message;
-                    alert(msg);
+                    Swal.fire(msg);
+                }
+            });
                 }
             });
         },
 
         editBook(id) {
-            const book = this.response.books.find(item => item.id === id);
+            const book = this.response.find(item => item.id === id);
             this.editId = id;
             this.editname = book.name;
             this.editauthor = book.author;
@@ -78,24 +114,59 @@ export default {
         },
 
         updateBook() {
-            this.$inertia.post('/update-book',
-                {
-                    id: this.editId,
-                    name: this.editname,
-                    author: this.editauthor,
-                    category: this.editcategory,
-                    book_status: this.editbookStatus,
-                },
-                {
-                    onSuccess: (res) => {
-                        const msg = res.props.flash.message;
-                        alert(msg);
-                    }
-                });
-            this.editname = '';
-            this.editauthor = '';
-            this.editcategory = '';
-            this.editbookStatus = '';
+            Swal.fire({
+                title: "確定要修改嗎?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$inertia.post('/update-book',
+                        {
+                            id: this.editId,
+                            name: this.editname,
+                            author: this.editauthor,
+                            category: this.editcategory,
+                            book_status: this.editbookStatus,
+                        },
+                        {
+                            onSuccess: (res) => {
+                                const msg = res.props.flash.message;
+                                Swal.fire(msg);
+                            }
+                        });
+                    this.editname = '';
+                    this.editauthor = '';
+                    this.editcategory = '';
+                    this.editbookStatus = '';
+                }
+            });
+
+        },
+
+        filterBook(rule) {
+            this.$inertia.get('/test', {
+                rule: rule,
+            });
+        },
+
+        putFile(e) {
+            const file = e.target.files[0];
+            this.fileData = file;
+        },
+
+        submitFile() {
+            this.$inertia.post('/upload-file',
+            {
+                file: this.fileData,
+            },{
+                onSuccess: (res) => {
+                    const msg = res.props.flash.message;
+                    Swal.fire(msg);
+                }
+            });
         },
     },
 }
@@ -109,8 +180,12 @@ export default {
 
         <div class="w-full bg-blue-400 flex flex-col items-center p-4">
             <Link href="./" class="block border border-black p-2 mt-3 mb-2 rounded">Back to homepage</Link>
+            <Link href="./" class="border border-black p-2 rounded cursor-pointer mb-2" @click="filterBook(0)">全部書籍
+            </Link>
+            <Link href="./" class="border border-black p-2 rounded cursor-pointer mb-5" @click="filterBook(1)">作者:123
+            </Link>
 
-            <div v-for="book in response.books" :key="book.id">
+            <div v-for="book in response" :key="book.id">
                 <div>書名：{{ book.name }}</div>
                 <div>作者：{{ book.author }}</div>
                 <div>分類：{{ book.category }}</div>
@@ -166,6 +241,13 @@ export default {
             </form>
             <button type="button" class="block border border-black p-2 mt-3 rounded" @click="addBook">Add new
                 book</button>
+
+            <section class="flex mt-5">
+            <input type="file" @change="putFile">
+            <div class="cursor-pointer p-2 border border-black bg-green-500/50" @click="submitFile">上傳檔案</div>
+        </section>
         </div>
+
+        
     </AuthenticatedLayout>
 </template>
