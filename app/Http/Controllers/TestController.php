@@ -243,10 +243,10 @@ class TestController extends Controller
             $fileName = $file->getClientOriginalName();
 
             // 組成檔案路徑
-            $path = public_path() . '/upload/' . $fileName;
+            $path = '/upload/' . $fileName;
 
             // 將文件存入指定路徑
-            move_uploaded_file($file, $path);
+            move_uploaded_file($file, public_path(), $path);
 
             $message = '成功';
         } catch (\Throwable $th) {
