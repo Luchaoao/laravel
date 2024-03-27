@@ -62,7 +62,10 @@ Route::post('/update-book',[TestController::class, 'updateBook']);
 // 上傳檔案
 Route::post('/upload-file',[TestController::class, 'uploadFile']);
 
+Route::post('/send-email',[TestController::class, 'sendMail'])->name('send.mail');
+
 });
+
 
 
 

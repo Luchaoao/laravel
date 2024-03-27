@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Notifications\UserMessage;
 
 class TestController extends Controller
 {
@@ -254,5 +256,15 @@ class TestController extends Controller
         }
 
         return redirect('/test')->with(['message' => $message]);
+    }
+
+    public function sendMail(){
+        $user = User::find(1);
+        $data = (object)[
+            'title' =>'Hello',
+            'content' => '已寄出',
+        ];
+
+        $user->notify(new UserMessage($data));
     }
 }
